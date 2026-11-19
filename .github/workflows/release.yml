@@ -59,10 +59,7 @@ jobs:
 
       - name: Self-contained bundle
         shell: pwsh
-        env:
-          GIPHY_API_KEY: ${{ secrets.GIPHY_API_KEY }} # built in for GIF search
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:GIPHY_API_KEY)) { throw "The GIPHY_API_KEY Actions secret is required for a release." }
           dotnet publish Holm.App -c Release -r ${{ matrix.rid }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:DebugType=none -o out/sc
           New-Item -ItemType Directory -Force assets | Out-Null
           New-Item -ItemType Directory -Force pkg | Out-Null
