@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 – unreleased
+## 1.0.0 – 2026-11-19
 
 ### Added
 - **Holm Lite.** The lightweight edition of Holm, from Holm 2.0.1: the notch with music, pop-outs, messages, batteries, calls, the timer, weather, the AI usage rings and the tools (notes, reminders, calculator, clipboard history, mixer, color picker, shelf).
