@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.VisualTree;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using WinNotch.Account;
 
 namespace Holm.App;
 
@@ -51,18 +50,6 @@ public sealed partial class NotchWindow
             ApplyState(animate: false);
             FreezeForPicture();
             Snapshot(Path.Combine(folder, "open.png"));
-            await SnapshotHubAsync(folder);
-
-            // The Account page as someone signed out sees it. A self-test never signs in; its account file would sit in the folder.
-            _account ??= new AccountService(_settings, _achievements, _friends, action => Dispatcher.UIThread.InvokeAsync(action).GetTask(), folder);
-            ShowHub(AccountPage.Key);
-            await Task.Delay(1500);
-            if (_settingsWindow is { } hub)
-            {
-                using var picture = new RenderTargetBitmap(new PixelSize((int)hub.Bounds.Width, (int)hub.Bounds.Height));
-                picture.Render(hub);
-                picture.Save(Path.Combine(folder, "account.png"), new PngBitmapEncoderOptions());
-            }
 
             bool volume = _audio.TryGetVolume(out float level, out bool muted);
             var power = _powerPlatform.Read();
@@ -175,15 +162,4 @@ public sealed partial class NotchWindow
         bitmap.Save(file, new PngBitmapEncoderOptions());
     }
 
-    /// <summary>With HOLM_SELFTEST_HUB=page also a picture of the Holm window on that page (hub.png), to see a design.</summary>
-    async Task SnapshotHubAsync(string folder)
-    {
-        if (Environment.GetEnvironmentVariable("HOLM_SELFTEST_HUB") is not { Length: > 0 } page) return;
-        ShowHub(page);
-        await Task.Delay(1500);
-        if (_settingsWindow is not { } hub) return;
-        using var bitmap = new RenderTargetBitmap(new PixelSize((int)hub.Bounds.Width, (int)hub.Bounds.Height));
-        bitmap.Render(hub);
-        bitmap.Save(Path.Combine(folder, "hub.png"), new PngBitmapEncoderOptions());
-    }
 }

@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using WinNotch.Sharing;
 
 namespace WinNotch.Tests;
 
@@ -43,13 +42,6 @@ static class Net
         finally { listener.Stop(); }
     }
 
-    /// <summary>A sender and a receiver channel sharing a fresh key, over loopback TCP.</summary>
-    public static async Task<(SecureChannel Sender, SecureChannel Receiver)> ChannelPairAsync()
-    {
-        var (a, b) = await LoopbackPairAsync();
-        var key = RandomNumberGenerator.GetBytes(32);
-        return (new SecureChannel(a, key, initiator: true), new SecureChannel(b, key, initiator: false));
-    }
 
     public static CancellationToken Timeout(int seconds = 30) => new CancellationTokenSource(TimeSpan.FromSeconds(seconds)).Token;
 }

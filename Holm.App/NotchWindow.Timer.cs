@@ -67,14 +67,12 @@ public sealed partial class NotchWindow
 
     /// <summary>
     /// The right-click menu of the notch, as in the WPF app: what you use (the timer), Settings… with the switches,
-    /// Customize with the settings that need a choice, and Quit.
+    /// Customize with the settings that need a choice, and Quit. Holm Lite has no settings window: this menu is its settings.
     /// </summary>
     void BuildContextMenu()
     {
         var quit = new MenuItem { Header = "Quit" };
         quit.Click += (_, _) => (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
-        var settings = new MenuItem { Header = "Settings…" };
-        settings.Click += (_, _) => OpenSettings();
         var bounceLevel = new MenuItem { Header = "Bounce" };
         var weather = new MenuItem { Header = "Weather" };
         var collapsedSize = new MenuItem { Header = "Collapsed size" };
@@ -82,11 +80,7 @@ public sealed partial class NotchWindow
         var ai = new MenuItem { Header = "AI button" };
         var messages = new MenuItem { Header = "Messages" };
         var quiet = new MenuItem { Header = "Quiet hours" };
-        var startPage = new MenuItem { Header = "Start page…" };
-        startPage.Click += (_, _) => Dispatcher.UIThread.Post(() => ShowHub(StartPage.Key), DispatcherPriority.Background);
         var customize = new MenuItem { Header = "Customize" };
-        customize.Items.Add(startPage);
-        customize.Items.Add(new Separator());
         customize.Items.Add(messages);
         customize.Items.Add(quiet);
         customize.Items.Add(weather);
@@ -94,22 +88,10 @@ public sealed partial class NotchWindow
         customize.Items.Add(collapsedSize);
         customize.Items.Add(expandedSize);
         customize.Items.Add(bounceLevel);
-        var beamText = new MenuItem { Header = "Beam text" };
-        var receive = new MenuItem { Header = "Receive with copied code" };
-        receive.Click += (_, _) => _ = ReceiveCopiedCodeAsync();
-        var hub = new MenuItem { Header = "Friends and chat…" };
-        hub.Click += (_, _) => Dispatcher.UIThread.Post(() => OpenChat(null), DispatcherPriority.Background);
-        var network = new MenuItem { Header = "Wi-Fi and speed test…" };
-        network.Click += (_, _) => Dispatcher.UIThread.Post(() => ShowHub("network"), DispatcherPriority.Background);
         var menu = new ContextMenu();
         menu.Items.Add(_menuTimer);
         menu.Items.Add(_menuSleep);
-        menu.Items.Add(beamText);
-        menu.Items.Add(receive);
         menu.Items.Add(new Separator());
-        menu.Items.Add(hub);
-        menu.Items.Add(network);
-        menu.Items.Add(settings);
         menu.Items.Add(customize);
         menu.Items.Add(_monitorSeparator);
         // one entry per display is inserted here when the menu opens
@@ -125,8 +107,6 @@ public sealed partial class NotchWindow
             FillWeatherMenu(weather);
             FillMessagesMenu(messages);
             FillAiMenu(ai);
-            FillBeamTextMenu(beamText);
-            receive.IsEnabled = _settings.Beam;
             FillQuietMenu(quiet);
             FillSizeMenu(collapsedSize, expanded: false);
             FillSizeMenu(expandedSize, expanded: true);
@@ -250,7 +230,6 @@ public sealed partial class NotchWindow
         ShowTimer();
         Diag.Log("Timer done");
         _sound.PlayAlarm();
-        Achieve(AchievementBook.Timers);
         string length = Countdown.Describe(timer.Length);
         if (_busy)
         {

@@ -21,7 +21,7 @@ public sealed partial class NotchWindow
     /// <summary>The clipboard is watched while the history, the password wipe, Beam (copied codes) or screenshots need it.</summary>
     void FollowClipboard()
     {
-        if (_settings.ClipboardHistory || _settings.ClearPasswords || _settings.Beam || _settings.Screenshots) _clipboardPlatform.Start();
+        if (_settings.ClipboardHistory || _settings.ClearPasswords || _settings.Screenshots) _clipboardPlatform.Start();
         else _clipboardPlatform.Stop();
     }
 

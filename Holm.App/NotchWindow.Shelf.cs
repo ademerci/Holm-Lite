@@ -73,6 +73,16 @@ public sealed partial class NotchWindow
             Diag.Log($"Shelf: {gone} item(s) moved or deleted meanwhile");
         }
         ShowShelf();
+
+        // Holm Lite has no Beam: files dropped on the notch go straight onto the shelf.
+        DragDrop.SetAllowDrop(_island, true);
+        _island.AddHandler(DragDrop.DragOverEvent, (_, e) =>
+            e.DragEffects = !_draggingOut && e.DataTransfer.Contains(DataFormat.File) ? DragDropEffects.Copy : DragDropEffects.None);
+        _island.AddHandler(DragDrop.DropEvent, (_, e) =>
+        {
+            if (_draggingOut || DroppedPaths(e) is not { Count: > 0 } dropped) return;
+            AddToShelf(dropped); // says so in a peek
+        });
     }
 
     IReadOnlyList<string> ShelfItems => _settings.Shelf;

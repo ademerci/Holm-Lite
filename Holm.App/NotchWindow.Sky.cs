@@ -43,7 +43,7 @@ public sealed partial class NotchWindow
             }
         }
         if (!_settings.SkyColors) _greeting.Foreground = Dim; // no sky, no tint
-        _greeting.Text = Sky.Greeting(DateTime.Now, _settings.ProfileName);
+        _greeting.Text = Sky.Greeting(DateTime.Now, null);
         if (on == _skyOn) return;
         _skyOn = on;
         _sky.Transitions = _settings.Animations

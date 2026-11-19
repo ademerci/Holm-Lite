@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: write
-  actions: write # starts the website build once the release is out
 
 jobs:
   release:
@@ -73,15 +72,15 @@ jobs:
             $info = [Diagnostics.FileVersionInfo]::GetVersionInfo((Resolve-Path out/sc/Holm.App.exe).Path)
             $file = '{0}.{1}.{2}.{3}' -f $info.FileMajorPart, $info.FileMinorPart, $info.FileBuildPart, $info.FilePrivatePart
             if ($file -ne "$env:VERSION.0") { throw "The exe's file version is $file, not $env:VERSION.0: the 1.12 updater would refuse it." }
-            if ($info.ProductName -ne "Holm") { throw "The exe's product name is '$($info.ProductName)', not 'Holm': every updater would refuse it." }
+            if ($info.ProductName -ne "Holm Lite") { throw "The exe's product name is '$($info.ProductName)', not 'Holm Lite': every updater would refuse it." }
             Write-Host "File version $file, as the 1.12 updater expects"
             Copy-Item out/sc/Holm.App.exe assets/Holm.exe
             Copy-Item out/sc/Holm.App.exe pkg/Holm.exe
-            Set-Content pkg/README.txt "Holm $env:VERSION for Windows x64`r`n`r`nRun Holm.exe. No .NET installation required.`r`nSee https://github.com/ademerci/Holm for details." -NoNewline
+            Set-Content pkg/README.txt "Holm Lite $env:VERSION for Windows x64`r`n`r`nRun Holm.exe. No .NET installation required.`r`nSee https://github.com/ademerci/Holm-Lite for details." -NoNewline
             Compress-Archive -Path pkg/* -DestinationPath "assets/Holm-$env:VERSION-win-x64.zip"
           } else {
             Copy-Item out/sc/Holm.App pkg/Holm
-            Set-Content pkg/README.txt "Holm $env:VERSION for Linux x64`n`nRun ./Holm. No .NET installation required.`nSee https://github.com/ademerci/Holm for details." -NoNewline
+            Set-Content pkg/README.txt "Holm Lite $env:VERSION for Linux x64`n`nRun ./Holm. No .NET installation required.`nSee https://github.com/ademerci/Holm-Lite for details." -NoNewline
             tar -czf "assets/Holm-$env:VERSION-linux-x64.tar.gz" -C pkg .
           }
 
@@ -114,12 +113,5 @@ jobs:
           ISLAND: ${{ inputs.island }}
           VERSION: ${{ inputs.version }}
         run: |
-          gh release create "v$VERSION" assets/* --target "${{ github.sha }}" --title "Holm $VERSION — $ISLAND" \
+          gh release create "v$VERSION" assets/* --target "${{ github.sha }}" --title "Holm Lite $VERSION — $ISLAND" \
             --notes-file "publish/release-$VERSION-release-notes.md" --latest
-
-      # A release made with this workflow's token doesn't start the Website workflow's "release" trigger (GitHub
-      # starts no workflows for events of github.token), so the site is built and deployed here by hand.
-      - name: Update the website
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run website.yml --ref main -f deploy=true

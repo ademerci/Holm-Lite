@@ -45,5 +45,5 @@ public sealed partial class NotchWindow
     }
 
     /// <summary>Whether the pointer is over one of Holm's own windows: the notch, its menus, the settings window.</summary>
-    bool IsHolmUnderPointer() => _island.IsPointerOver || _settingsWindow?.IsPointerOver == true;
+    bool IsHolmUnderPointer() => _island.IsPointerOver;
 }

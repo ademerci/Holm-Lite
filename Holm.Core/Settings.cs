@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Win32;
-using WinNotch.Sharing;
 
 namespace WinNotch;
 
@@ -142,33 +141,6 @@ internal sealed class AppSettings
     public string? WeatherPlace { get; set; }
     public double? WeatherLatitude { get; set; }
     public double? WeatherLongitude { get; set; }
-    /// <summary>Beam: drop files on the notch to send them; be visible to Holm users on this network; pick up copied codes.</summary>
-    [JsonPropertyName("AirDrop")] // its name before 1.3, kept so the setting survives the update
-    public bool Beam { get; set; } = true;
-    /// <summary>Relay for sending over the internet, "host:port".</summary>
-    public string? Relay { get; set; }
-    /// <summary>A trophy pops out of the notch when an achievement unlocks.</summary>
-    public bool AchievementPopups { get; set; } = true;
-    /// <summary>Friends who ask whether your Holm runs also learn what you're doing (music, a call, a game, a timer).</summary>
-    public bool ShareActivity { get; set; } = true;
-    /// <summary>A friend's chat message pops out of the notch with Reply (it's in the Holm window's Chat either way).</summary>
-    public bool ChatPopups { get; set; } = true;
-    /// <summary>The quick reactions in the chat's reaction bar, Instagram's by default (see <see cref="ChatReaction"/>).</summary>
-    public List<string> QuickReactions { get; set; } = new(ChatReaction.Defaults);
-    /// <summary>GIFs sent or received lately, newest first, for the GIF picker (links only).</summary>
-    public List<string> RecentGifs { get; set; } = new();
-    /// <summary>A GIPHY API key for searching GIFs, if Holm has none built in.</summary>
-    public string? GifSearchKey { get; set; }
-    /// <summary>Friends' waves pop up (and you can wave at them from the Friends menu).</summary>
-    public bool Waves { get; set; } = true;
-    /// <summary>A folder dropped on a person is packed as a ZIP and sent; the ZIP is deleted afterwards.</summary>
-    public bool SendFolders { get; set; } = true;
-    /// <summary>Text can be beamed (from the clipboard), and beamed text arriving goes to the clipboard.</summary>
-    public bool BeamText { get; set; } = true;
-    /// <summary>A friend whose Holm isn't running gets the files once it is; see <see cref="SendQueue"/>.</summary>
-    public bool SendLater { get; set; } = true;
-    /// <summary>What waits for friends (paths only; files Holm made are kept in its temp folder).</summary>
-    public List<QueuedSend> SendQueue { get; set; } = new();
     double? _collapsedScale, _expandedScale;
     double _legacyScale = 1;
 
@@ -196,37 +168,6 @@ internal sealed class AppSettings
         set => _legacyScale = value ?? 1;
     }
 
-    // Your profile, as friends see it (see FriendProfile): null name for the Windows account's, null color for the
-    // one the name gives, and the picture as the small JPEG that goes to friends (base64).
-    public string? ProfileName { get; set; }
-    public string? ProfileStatus { get; set; }
-    public string? ProfileColor { get; set; }
-    public string? ProfilePicture { get; set; }
-
-    // Friends (see Sharing/Friends.cs)
-    public List<Friend> Friends { get; set; } = new();
-    public string? FriendsTopic { get; set; }
-    /// <summary>Our private key, encrypted for this Windows account (DPAPI).</summary>
-    public string? FriendsKey { get; set; }
-    /// <summary>ntfy server for our inbox; null means Holm's relay (and ntfy.sh for older friends). Set it before copying your friend code.</summary>
-    public string? FriendsServer { get; set; }
-    /// <summary>Server time of the last note in our inbox, to catch up from after a restart.</summary>
-    public long? FriendsSince { get; set; }
-    /// <summary>Our inbox moved to Holm's relay: our friend code names it and friends were told (FriendsService.MoveToRelay).</summary>
-    public bool FriendsRelay { get; set; }
-    /// <summary>Server time of the last note in our inbox on the relay, to catch up from after a restart.</summary>
-    public long? FriendsRelaySince { get; set; }
-    /// <summary>Ids of the last notes handled, so catching up never handles one twice.</summary>
-    public List<string> FriendsSeen { get; set; } = new();
-    /// <summary>Our invite codes that still work (Sharing/FriendInvite.cs).</summary>
-    public List<OwnInvite> FriendInvites { get; set; } = new();
-    /// <summary>Friend requests we sent that haven't been answered yet; a late yes still makes you friends.</summary>
-    public List<PendingFriendRequest> PendingFriendRequests { get; set; } = new();
-
-    /// <summary>The Holm account was offered once, at the first start after it came (Settings › Account any time after).</summary>
-    public bool AccountOffered { get; set; }
-    /// <summary>The sign-in card on the profile page was closed with its cross: only a small "Sign in" row is left.</summary>
-    public bool AccountHidden { get; set; }
 
     static string FilePath => Path.Combine(Diag.Folder, "settings.json");
 
@@ -283,7 +224,7 @@ internal static class FormerName
 internal static class Autostart
 {
     const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    const string ValueName = "Holm";
+    const string ValueName = "Holm Lite";
 
     public static bool IsEnabled
     {
@@ -315,7 +256,7 @@ internal static class Autostart
 internal static class Diag
 {
     public static bool Enabled;
-    public static readonly string Folder = DevFolder ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Holm");
+    public static readonly string Folder = DevFolder ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Holm Lite"); // apart from the full Holm, which may run beside it
 
     /// <summary>Dev and bench builds only: HOLM_DATA=folder runs Holm on test data beside your own Holm (measurements, snapshots).</summary>
     public static string? DevFolder =>

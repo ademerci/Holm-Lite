@@ -82,33 +82,7 @@ public sealed partial class NotchWindow
         _updates?.Dispose();
     }
 
-    /// <summary>The Updates page of the Holm window.</summary>
-    HubView UpdatesPage()
-    {
-        var content = new StackPanel { Margin = new Thickness(20) };
-        content.Children.Add(new TextBlock { Text = $"Holm {RunningVersion.ToString(3)}", FontSize = 17, FontWeight = FontWeight.SemiBold });
-        content.Children.Add(new TextBlock { Text = "Check for a new release and update Holm when you're ready.", Foreground = HubTheme.Dim, Margin = new Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap });
-        var automatic = new CheckBox { Content = "Check for updates automatically", IsChecked = _settings.CheckForUpdatesAutomatically, Foreground = Look.Ink, Margin = new Thickness(0, 18, 0, 0) };
-        ToolTip.SetTip(automatic, "Checks shortly after Holm starts and every two hours. Updates are installed only when you choose.");
-        automatic.IsCheckedChanged += (_, _) => SetAutomaticUpdateChecks(automatic.IsChecked == true);
-        content.Children.Add(automatic);
-        _updatesStatusText = new TextBlock { Margin = new Thickness(0, 22, 0, 16), TextWrapping = TextWrapping.Wrap };
-        content.Children.Add(_updatesStatusText);
-        var actions = new StackPanel { Orientation = Orientation.Horizontal };
-        _checkUpdatesButton = HubTheme.Action("Check for updates", primary: true);
-        _checkUpdatesButton.Click += async (_, _) => await CheckForUpdatesAsync(manual: true);
-        actions.Children.Add(_checkUpdatesButton);
-        _installUpdateButton = HubTheme.Action("Update and restart");
-        _installUpdateButton.Margin = new Thickness(10, 0, 0, 0);
-        _installUpdateButton.Click += async (_, _) => await InstallUpdateAsync();
-        actions.Children.Add(_installUpdateButton);
-        content.Children.Add(actions);
-        var page = new UpdatesView { Child = new Border { Background = HubTheme.Card, CornerRadius = new CornerRadius(12), VerticalAlignment = VerticalAlignment.Top, Child = content } };
-        RefreshUpdateMenu(refreshNotification: false);
-        return page;
-    }
 
-    sealed class UpdatesView : HubView { }
 
     void RefreshUpdateMenu(bool refreshNotification = true)
     {
@@ -174,7 +148,7 @@ public sealed partial class NotchWindow
             || _hiddenForFullscreen || _hovered || _busy || _sharing || _taskVisible
             || _peekActive || _installingUpdate || _updatesClosing) return;
         _messageLogoHost.Child = UpdateNotificationIcon(28);
-        _messageTitle.Text = $"Holm {release.Version.ToString(3)} is available";
+        _messageTitle.Text = $"Holm Lite {release.Version.ToString(3)} is available";
         _messageText.Text = InstallsItself ? "Click to update and restart Holm" : "Click to get it";
         _messageText.IsVisible = true;
         _updateNotification = true;
@@ -247,7 +221,7 @@ public sealed partial class NotchWindow
         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         row.Children.Add(UpdateNotificationIcon(28));
         var text = new StackPanel { Margin = new Thickness(10, 0, 10, 0) };
-        text.Children.Add(new TextBlock { Text = $"Holm {release.Version.ToString(3)} is available", FontSize = 13, FontWeight = FontWeight.SemiBold });
+        text.Children.Add(new TextBlock { Text = $"Holm Lite {release.Version.ToString(3)} is available", FontSize = 13, FontWeight = FontWeight.SemiBold });
         _updateRowStatus = new TextBlock { Text = _installingUpdate ? _updateStatus : InstallsItself ? "Click to update and restart Holm" : "Click to get it", FontSize = 12, Foreground = Dim };
         text.Children.Add(_updateRowStatus);
         Grid.SetColumn(text, 1);
@@ -297,7 +271,6 @@ public sealed partial class NotchWindow
         _updatePercent = 0;
         _updateStatus = "Downloading update…";
         RefreshUpdateMenu();
-        StopSharing(); // no new transfers while preparing to restart
         string staging = Path.Combine(Path.GetTempPath(), "Holm-update-" + Guid.NewGuid().ToString("N"));
         bool handedOff = false;
         try
@@ -343,7 +316,6 @@ public sealed partial class NotchWindow
             }
             if (!_updatesClosing)
             {
-                StartSharing();
                 RefreshUpdateMenu();
             }
         }

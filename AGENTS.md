@@ -1,4 +1,6 @@
-# Holm — Architecture & Agent Guide
+# Holm Lite — Architecture & Agent Guide
+
+**This is Holm Lite**, the lightweight edition of [Holm](https://github.com/ademerci/Holm), forked from Holm 2.0.1. It has no friends, Beam, chat, streaming, account, sync, achievements, phone sharing, website or Holm window (settings pages). Don't bring them back. Fixes from Holm come over by cherry-pick; leave out anything that touches the removed parts. The product name is "Holm Lite" (the updater checks it), settings live in `%APPDATA%\Holm Lite`, autostart is named "Holm Lite", and updates come only from `ademerci/Holm-Lite`. The rest of this guide is Holm's: parts about the removed features, the website, Store and island names don't apply.
 
 Holm is a cross-platform desktop notch overlay for **Windows** and **Linux**, built in C# (.NET 10) with **Avalonia UI** and **SkiaSharp**.
 

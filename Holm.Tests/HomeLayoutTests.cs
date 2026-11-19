@@ -138,12 +138,4 @@ public class HomeLayoutTests
         Assert.Empty(settings.HomeSections);
         Assert.Empty(settings.HomeTools);
     }
-
-    [Fact]
-    public void The_start_page_goes_with_the_account()
-    {
-        foreach (string name in new[] { nameof(AppSettings.HomeSections), nameof(AppSettings.HomeHidden), nameof(AppSettings.HomeSwapped),
-                                       nameof(AppSettings.HomeTools), nameof(AppSettings.HomeHiddenTools) })
-            Assert.Contains(name, WinNotch.Account.SettingsSync.Names);
-    }
 }

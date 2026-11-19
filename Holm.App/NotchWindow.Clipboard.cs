@@ -87,7 +87,6 @@ public sealed partial class NotchWindow
         OnClipboardForScreenshot();
         if (_settings.ClearPasswords)
             DispatcherTimer.RunOnce(() => _ = CheckPasswordAsync(sequence), TimeSpan.FromMilliseconds(120));
-        if (_settings.Beam) DispatcherTimer.RunOnce(() => _ = OnClipboardForBeamAsync(), TimeSpan.FromMilliseconds(150));
         if (!_settings.ClipboardHistory || _clipCapturePending) return;
         _clipCapturePending = true;
         // Let the app that copied finish with the clipboard first.

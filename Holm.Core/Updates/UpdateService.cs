@@ -19,8 +19,8 @@ internal sealed record UpdateRelease(Version Version, string Tag, Uri ReleaseUrl
 /// <summary>Reads public stable releases and stages a verified standalone executable without touching the installed app.</summary>
 internal sealed class UpdateService : IDisposable
 {
-    const string RepositoryUrl = "https://github.com/ademerci/Holm";
-    internal const string LatestReleaseUrl = "https://api.github.com/repos/ademerci/Holm/releases/latest";
+    const string RepositoryUrl = "https://github.com/ademerci/Holm-Lite";
+    internal const string LatestReleaseUrl = "https://api.github.com/repos/ademerci/Holm-Lite/releases/latest";
     internal const long MaxDownloadBytes = 256L * 1024 * 1024;
     internal const long MaxExecutableBytes = 512L * 1024 * 1024;
     const int MaxMetadataBytes = 1024 * 1024;
@@ -193,7 +193,7 @@ internal sealed class UpdateService : IDisposable
             throw new InvalidDataException("The update is not a Windows x64 application.");
         var file = FileVersionInfo.GetVersionInfo(path);
         var actualVersion = new Version(file.FileMajorPart, file.FileMinorPart, file.FileBuildPart, file.FilePrivatePart);
-        if (Normalize(actualVersion) != Normalize(expectedVersion) || file.ProductName != "Holm")
+        if (Normalize(actualVersion) != Normalize(expectedVersion) || file.ProductName != "Holm Lite")
             throw new InvalidDataException("The executable does not match the advertised Holm version.");
     }
 

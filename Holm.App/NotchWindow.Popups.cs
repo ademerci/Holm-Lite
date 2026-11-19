@@ -117,8 +117,6 @@ public sealed partial class NotchWindow
         _taskIcon.FontWeight = textIcon ? FontWeight.SemiBold : FontWeight.Normal;
         _taskIconCircle.Background = circle;
         // A screenshot's picture or a chat GIF takes the icon's place; every other card has its icon.
-        StopTaskGif();
-        _taskGif = null;
         _taskThumb.IsVisible = false;
         _taskIconCircle.IsVisible = true;
         _taskTitle.Text = title;
@@ -162,8 +160,6 @@ public sealed partial class NotchWindow
     {
         _taskHide.Stop();
         _primaryAction = _secondaryAction = _extraAction = null;
-        StopTaskGif();
-        _taskGif = null;
         if (!_taskVisible) return;
         _taskVisible = false;
         ApplyState(animate: true);

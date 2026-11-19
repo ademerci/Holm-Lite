@@ -36,12 +36,6 @@ public sealed partial class NotchWindow
         _taskThumb.PointerReleased += (_, e) =>
         {
             e.Handled = true;
-            if (_taskGif is { } gif)
-            {
-                HideTask();
-                OpenChat(gif.Friend);
-                return;
-            }
             if (_shotPath is not { } path) return;
             HideTask();
             try { _shell.Open(path); }
@@ -177,15 +171,13 @@ public sealed partial class NotchWindow
             if (saved && _shotPath != null) _shotPath = path; // the same picture, saved after all: use the real file
             return;
         }
-        if (!_settings.Screenshots || _busy || _sharing || _taskVisible || _hiddenForFullscreen || _installingUpdate || PhoneShowing) return;
+        if (!_settings.Screenshots || _busy || _sharing || _taskVisible || _hiddenForFullscreen || _installingUpdate) return;
         if (Thumbnail(path) is not { } thumbnail) return;
         _lastShotAt = DateTime.UtcNow;
         _shotPath = path;
-        Achieve(AchievementBook.Screenshots);
         Diag.Log("Screenshot taken");
         ShowTask(ScreenshotGlyph, ShareBlue, "Screenshot", saved ? "Saved in " + Path.GetFileName(Path.GetDirectoryName(path)) : "Copied – a copy is kept for two days", null,
-                 ("Send", () => { if (_shotPath is { } shot) PickTarget(new[] { shot }); }),
-                 ("Shelf", () => { HideTask(); if (_shotPath is { } shot) AddToShelf(new[] { shot }); }));
+                 ("Shelf", () => { HideTask(); if (_shotPath is { } shot) AddToShelf(new[] { shot }); }), ("OK", HideTask));
         _taskThumb.Background = new ImageBrush(thumbnail) { Stretch = Stretch.UniformToFill };
         _taskThumb.IsVisible = true;
         _taskIconCircle.IsVisible = false;

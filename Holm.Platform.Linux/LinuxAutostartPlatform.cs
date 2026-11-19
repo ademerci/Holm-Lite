@@ -20,7 +20,7 @@ public sealed class LinuxAutostartPlatform : IAutostartPlatform
     {
         string config = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") is { Length: > 0 } c
             ? c : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config");
-        return Path.Combine(config, "autostart", "holm.desktop");
+        return Path.Combine(config, "autostart", "holm-lite.desktop");
     }
 
     public bool CanChange => true;
@@ -48,7 +48,7 @@ public sealed class LinuxAutostartPlatform : IAutostartPlatform
     internal static string Entry(string[] command) => string.Join("\n",
         "[Desktop Entry]",
         "Type=Application",
-        "Name=Holm",
+        "Name=Holm Lite",
         "Comment=The notch at the top of the screen",
         "Exec=" + Exec(command),
         "Terminal=false",

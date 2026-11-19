@@ -118,12 +118,6 @@ public sealed partial class NotchWindow
         _calculatorToolBtn = ToolButton("Calc", "", Tool.Calculator, "Calculator");
         _chatsToolBtn = ToolWord("Chats", "\uE8BD");
         ToolTip.SetTip(_chatsToolBtn, "Chats");
-        _chatsToolBtn.Click += () =>
-        {
-            CloseFromInside();
-            Dispatcher.UIThread.Post(() => OpenChat(null), DispatcherPriority.Background);
-        };
-        _toolBar.Children.Add(_chatsToolBtn);
         _clipboardToolBtn = ToolButton("Clipboard", ClipboardGlyph, Tool.Clipboard, "Clipboard history");
         _mixerToolBtn = ToolButton("Mixer", MixerGlyph, Tool.Mixer, "Volume per app");
         _aiToolBtn = ToolWord("AI", AiUsageIcon(Look.Aero ? Look.Ink : Dim, 14));
@@ -290,7 +284,7 @@ public sealed partial class NotchWindow
         _notesToolBtn.IsVisible = _settings.Notes && !_home.IsToolHidden(HomeLayout.Notes);
         _remindersToolBtn.IsVisible = _settings.Reminders && !_home.IsToolHidden(HomeLayout.Reminders);
         _calculatorToolBtn.IsVisible = _settings.Calculator && !_home.IsToolHidden(HomeLayout.Calculator);
-        _chatsToolBtn.IsVisible = !_home.IsToolHidden(HomeLayout.Chats);
+        _chatsToolBtn.IsVisible = false; // Holm Lite has no chats
         _clipboardToolBtn.IsVisible = _settings.ClipboardHistory && !_home.IsToolHidden(HomeLayout.Clipboard);
         _mixerToolBtn.IsVisible = _settings.AppVolume && !_home.IsToolHidden(HomeLayout.Mixer);
         _aiToolBtn.IsVisible = _settings.AiUsage && _aiUsage.Count > 0 && !_home.IsToolHidden(HomeLayout.Ai);
@@ -331,7 +325,6 @@ public sealed partial class NotchWindow
         if (text == _settings.NoteText) return;
         _settings.NoteText = text;
         _settings.Save();
-        if (text.Trim().Length > 0 && _achievements?.Value(AchievementBook.Notes) == 0) Achieve(AchievementBook.Notes);
     }
 
     // ───────────── calculator ─────────────

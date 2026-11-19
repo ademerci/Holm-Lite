@@ -95,7 +95,7 @@ public sealed partial class NotchWindow : Window
         Spring.Bounce = _settings.Bounce ? _settings.BounceLevel : 0;
         Spring.Jelly = _settings.Jelly;
 
-        Title = "Holm";
+        Title = "Holm Lite";
         Width = BaseWidth;
         Height = NeededWindowHeight(30);
         CanResize = false;
@@ -122,21 +122,13 @@ public sealed partial class NotchWindow : Window
         InitVpn();
         InitPrivacy(platform);
         InitMessages(platform);
-        InitBeam(platform);
-        InitHub();
-        InitAchievements();
-        InitAccount();
-        InitActivity();
-        InitStreaming();
-        InitSendLater();
         InitUpdates();
         BuildFocumon();
         InitDictation(platform);
-        InitPhone();
         BuildToday();
         // The rows of home in the WPF app's order (MainWindow.xaml), each in its section; the sections go where you put
         // them (Settings › Start page), in that order unless you moved them.
-        _liveSection.Children.AddRange(new Control[] { _quietNote, _clearNotificationsBtn, _messageRows, _downloadRow, _laterRows, _usbRows, _callRow, _privacyRows, _timerRow });
+        _liveSection.Children.AddRange(new Control[] { _quietNote, _clearNotificationsBtn, _messageRows, _downloadRow, _usbRows, _callRow, _privacyRows, _timerRow });
         _shelfSection.Children.Add(_shelfRow);
         ApplyHomeLayout();
         _island.Child = _islandContent;
@@ -192,9 +184,6 @@ public sealed partial class NotchWindow : Window
         if (SelfTestFolder == null) StartFullscreen();
         StartPrivacy();
         StartMessages();
-        StartSharing();
-        StartAccount();
-        StartSendLater();
         StartUpdates();
         StartFocumon();
         StartDictation();
@@ -223,13 +212,10 @@ public sealed partial class NotchWindow : Window
         _drives.Stop();
         _sensors.Stop();
         _notifications.Stop();
-        StopSharing();
         StopUpdates();
         StopFocumon();
         StopDictation();
-        StopPhone();
         StopAiUsage();
-        StopAccount();
         ForgetClipFiles();
         base.OnClosed(e);
     }
@@ -258,7 +244,6 @@ public sealed partial class NotchWindow : Window
 
     void OnMediaChanged(MediaInfo? info, bool trackChanged)
     {
-        if (trackChanged && info is { IsPlaying: true, Title.Length: > 0 }) Achieve(AchievementBook.Songs);
         // Music stopped: the covers and the equalizer pulled a lot into memory that idle doesn't need.
         if (_info?.IsPlaying == true && info?.IsPlaying != true && !_hovered) _trimTimer.Start();
         _info = info;
@@ -275,7 +260,6 @@ public sealed partial class NotchWindow : Window
         var target = _hovered ? NotchState.Expanded
                    : _sharing ? NotchState.Share
                    : _taskVisible ? NotchState.Task
-                   : PhoneShowing ? NotchState.Phone
                    : _volumePeek ? NotchState.Volume
                    : _peekActive ? (_peekMessage ? NotchState.Message : NotchState.Peek)
                    : _dictating ? NotchState.Dictation // you're talking to it right now: above a call or music
@@ -358,7 +342,6 @@ public sealed partial class NotchWindow : Window
             SetView(_messageView, target == NotchState.Message, animate);
             SetView(_badgeView, target == NotchState.Badge, animate);
             SetView(_taskView, target == NotchState.Task, animate);
-            SetView(_phoneView, target == NotchState.Phone, animate);
             SetView(_shareView, target == NotchState.Share, animate);
             SetView(_expandedView, target == NotchState.Expanded, animate);
             if (_state == NotchState.Expanded && target != NotchState.Expanded) { EndTyping(); SaveNotes(); EndChoosingPlace(); }
